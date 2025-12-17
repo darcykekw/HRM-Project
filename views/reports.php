@@ -7,12 +7,14 @@ $db = $database->getConnection();
 $auth = new Auth($db);
 $auth->requireLogin();
 
-// Report 1: Employees by Department
 $query_dept = "SELECT department, COUNT(*) as count FROM employees GROUP BY department";
 $stmt_dept = $db->prepare($query_dept);
 $stmt_dept->execute();
 
-// Report 2: List of all employees (Service Report simplified)
+$query_civil = "SELECT civil_status, COUNT(*) as count FROM employees GROUP BY civil_status";
+$stmt_civil = $db->prepare($query_civil);
+$stmt_civil->execute();
+
 $query_all = "SELECT employee_no, surname, firstname, position, date_hired FROM employees ORDER BY date_hired DESC";
 $stmt_all = $db->prepare($query_all);
 $stmt_all->execute();
@@ -74,8 +76,34 @@ $stmt_all->execute();
             
             <div class="col-md-6">
                 <div class="card">
-                    <div class="card-header bg-success text-white">
-                        Service Report (Date Hired)
+                    <div class="card-header bg-warning text-white">
+                        Employees by Civil Status
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Civil Status</th>
+                                    <th>Count</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php while ($row = $stmt_civil->fetch(PDO::FETCH_ASSOC)): ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($row['civil_status']); ?></td>
+                                    <td><?php echo $row['count']; ?></td>
+                                </tr>
+                                <?php endwhile; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header bg-success text-white">
+                Service Report (Date Hired)
                     </div>
                     <div class="card-body">
                         <table class="table table-sm">

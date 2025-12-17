@@ -71,7 +71,7 @@ $stmt = $employee->readAll($search);
                         <?php if ($role == 'HR Staff' || $role == 'HR Head'): ?>
                         <a href="edit_employee.php?id=<?php echo $row['id']; ?>" class="btn btn-warning btn-sm">Edit</a>
                         <?php endif; ?>
-                        <?php if ($role == 'HR Staff' || $role == 'HR Head'): ?>
+                        <?php if ($role == 'HR Head'): ?>
                         <a href="delete_employee.php?id=<?php echo $row['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</a>
                         <?php endif; ?>
                     </td>

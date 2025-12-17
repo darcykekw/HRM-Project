@@ -10,6 +10,15 @@ class Employee {
 
     public function create($data) {
         try {
+            // Set user context for triggers
+            if (session_status() == PHP_SESSION_NONE) {
+                session_start();
+            }
+            if (isset($_SESSION['user_id'])) {
+                $this->conn->exec("SET @current_user_id = " . $_SESSION['user_id']);
+                $this->conn->exec("SET @current_username = '" . $_SESSION['username'] . "'");
+            }
+
             $this->conn->beginTransaction();
 
             $query = "INSERT INTO " . $this->table_name . " 
@@ -20,14 +29,13 @@ class Employee {
                 Q34A, Q34B, Q35a, Q35b, Q36, Q37, Q38a, Q38b, Q39a, Q39b, Q40a, Q40b, Q40c) 
                 VALUES 
                 (:employee_no, :surname, :firstname, :middlename, :name_extension, :date_of_birth, :place_of_birth, :sex, :civil_status, :height_in_meter, :weight_in_kg, :blood_type, :gsis_id, :pagibig_id, :philhealth_no, :sss_no, :tin_no, :citizenship, :residential_address, :residential_zip, :permanent_address, :permanent_zip, :telephone_no, :mobile_no, :email_address, :department, :position, :date_hired,
-                '', '', '', '',
-                '', '', '', '', '',
-                '', '', '', '', '',
-                0, 0, 0, 0, '', 0, 0, 0, 0, 0, 0, 0, 0)";
+                'N/A', 'N/A', 'N/A', 'N/A',
+                'N/A', 'N/A', 'N/A', 'N/A', 'N/A',
+                'N/A', 'N/A', 'N/A', 'N/A', 'N/A',
+                0, 0, 0, 0, 'N/A', 0, 0, 0, 0, 0, 0, 0, 0)";
 
             $stmt = $this->conn->prepare($query);
 
-            // Bind all parameters
             foreach ($data as $key => $value) {
                 $stmt->bindValue(":$key", $value);
             }
@@ -73,9 +81,17 @@ class Employee {
 
     public function update($id, $data) {
         try {
+            // Set user context for triggers
+            if (session_status() == PHP_SESSION_NONE) {
+                session_start();
+            }
+            if (isset($_SESSION['user_id'])) {
+                $this->conn->exec("SET @current_user_id = " . $_SESSION['user_id']);
+                $this->conn->exec("SET @current_username = '" . $_SESSION['username'] . "'");
+            }
+
             $this->conn->beginTransaction();
             
-            // Construct query dynamically based on data keys, excluding id and employee_no (PK/Unique)
             $fields = [];
             foreach ($data as $key => $value) {
                 if ($key != 'id' && $key != 'employee_no') {
@@ -108,6 +124,15 @@ class Employee {
 
     public function delete($id) {
         try {
+            // Set user context for triggers
+            if (session_status() == PHP_SESSION_NONE) {
+                session_start();
+            }
+            if (isset($_SESSION['user_id'])) {
+                $this->conn->exec("SET @current_user_id = " . $_SESSION['user_id']);
+                $this->conn->exec("SET @current_username = '" . $_SESSION['username'] . "'");
+            }
+
             $this->conn->beginTransaction();
             $query = "DELETE FROM " . $this->table_name . " WHERE id = :id";
             $stmt = $this->conn->prepare($query);

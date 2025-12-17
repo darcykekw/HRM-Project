@@ -6,7 +6,7 @@ require_once '../classes/Employee.php';
 $database = new Database();
 $db = $database->getConnection();
 $auth = new Auth($db);
-$auth->requireRole(['HR Staff', 'HR Head']);
+$auth->requireRole(['HR Head']);
 
 $id = isset($_GET['id']) ? $_GET['id'] : die('ERROR: Missing ID.');
 
