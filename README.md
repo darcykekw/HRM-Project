@@ -39,6 +39,28 @@ The system comes with pre-configured accounts for different roles:
     *   **Architecture**: Object-Oriented PHP (Classes for Auth, Database, Employee).
     *   **Database**: Normalized schema with `AUTO_INCREMENT` IDs and proper data types.
 
+## Database Schema Adjustments
+
+### 1. Critical Fixes (Original Schema Errors)
+These changes were necessary to fix fundamental structural issues in the provided database:
+
+*   **Missing `AUTO_INCREMENT`**:
+    *   **Issue**: The original schema lacked `AUTO_INCREMENT` on primary keys (`id`).
+    *   **Fix**: Enabled auto-increment to allow new records to be inserted without manual ID assignment.
+*   **Referential Integrity (Foreign Keys)**:
+    *   **Issue**: Deleting an employee caused database errors or left "orphan" records in child tables.
+    *   **Fix**: Added `FOREIGN KEY` constraints with `ON DELETE CASCADE` to tables like `work_experience` and `trainings`. This ensures that when an employee is deleted, their related records are automatically removed.
+
+### 2. Project Enhancements
+These changes were made to support the specific features required by the HRMIS project:
+
+*   **CSC Form 212 Compliance**:
+    *   **Update**: Added missing columns for detailed addresses (`birth_city`, `res_barangay_address`) and questionnaire items (`Q34A`, `Q34B`, etc.) to match the Personal Data Sheet.
+*   **Data Constraints**:
+    *   **Update**: Increased `telephone_no` and `mobile_no` column lengths to `VARCHAR(50)` to prevent long numbers from being cut off.
+*   **Advanced Activity Logging**:
+    *   **Update**: Enhanced database triggers to capture the specific *user* performing the action (passing PHP session data to MySQL), which was not supported by the original simple triggers.
+
 ## Utility Scripts
 
 *   **`install.php`**:
@@ -46,4 +68,4 @@ The system comes with pre-configured accounts for different roles:
     *   **Usage**: Run this script (`http://localhost/hrmis/install.php`) to create the `hrm_project` database, tables, and default users. Useful for deployment or resetting the database.
 *   **`reset_password.php`**:
     *   **Purpose**: Emergency password reset.
-    *   **Usage**: If you get locked out, run this script (`http://localhost/hrmis/reset_password.php`) to reset the `admin` password to `password123`.
+    *   **Usage**: Run this script (`http://localhost/hrmis/reset_password.php`) to reset the `admin` password to `password123`.
