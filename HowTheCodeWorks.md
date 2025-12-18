@@ -21,7 +21,7 @@ Handling logins is done in the `Auth` class.
 *   **Role Checks**: I created a function `requireRole()` that I put at the top of restricted pages (like `delete_employee.php`). If a user doesn't have the right role (like 'HR Head'), it kicks them out.
 
 ## 4. Employee Management (`classes/Employee.php`)
-This is the biggest class in the project. It handles everything related to employees.
+This class contains the core logic for managing employee records.
 *   **CRUD**: It has functions for `create`, `read`, `update`, and `delete`.
 *   **Transactions**: In the `create` function, I used `beginTransaction()` and `commit()`. This is important because if something goes wrong while saving (like the internet cuts out), it `rollBack()` everything so we don't get half-saved data.
 *   **Activity Logs**: Inside the `create`, `update`, and `delete` functions, I pass the current user's ID to MySQL variables (`SET @current_user_id`). This way, the database triggers know exactly *who* made the change.
@@ -48,7 +48,7 @@ In `list_employees.php`, there is a search bar.
 *   Inside that function, I used SQL `LIKE` operators (e.g., `WHERE surname LIKE %Juan%`) to find matches in the ID, First Name, or Surname columns.
 
 ## 9. Database Automation (Triggers)
-One of the coolest parts is how the database handles its own logging.
+The database is set up to automatically log changes.
 *   **Setup**: The `install.php` script creates "Triggers" in the database. These are like mini-programs that live inside MySQL.
 *   **Execution**: Whenever PHP adds, edits, or deletes an employee, the Trigger immediately wakes up and writes a row into the `activity_logs` table.
 *   **Connection**: PHP helps out by telling MySQL *who* is doing the action (`SET @current_user_id`) right before the change happens, so the Trigger can record the username.
