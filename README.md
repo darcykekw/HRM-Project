@@ -1,8 +1,3 @@
-# HRMIS Project
-
-## Overview
-This is a Human Resource Management Information System (HRMIS) built with PHP and MySQL. It handles employee records, including personal information, employment details, and generates reports.
-
 ## Setup & Installation
 
 1.  **Database Configuration**:
