@@ -8,20 +8,16 @@ $pass = 'root';
 $dbname = 'hrm_project';
 
 try {
-    // 1. Connect to MySQL Server (without DB name first)
     $pdo = new PDO("mysql:host=$host", $user, $pass);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     echo "Connected to MySQL server.<br>";
 
-    // 2. Create Database
     $pdo->exec("CREATE DATABASE IF NOT EXISTS `$dbname`");
     echo "Database `$dbname` created or already exists.<br>";
     
-    // 3. Select Database
     $pdo->exec("USE `$dbname`");
 
-    // 4. Create Tables
     $passwordHash = password_hash('password123', PASSWORD_DEFAULT);
     
     $queries = [
@@ -60,13 +56,44 @@ try {
             residential_zip VARCHAR(10),
             permanent_address TEXT,
             permanent_zip VARCHAR(10),
-            telephone_no VARCHAR(20),
-            mobile_no VARCHAR(20),
+            telephone_no VARCHAR(50),
+            mobile_no VARCHAR(50),
             email_address VARCHAR(100),
             department VARCHAR(100),
             position VARCHAR(100),
             date_hired DATE,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            
+            birth_city VARCHAR(100) DEFAULT 'N/A',
+            birth_province VARCHAR(100) DEFAULT 'N/A',
+            birth_country VARCHAR(100) DEFAULT 'N/A',
+            contactno VARCHAR(50) DEFAULT 'N/A',
+            
+            res_barangay_address VARCHAR(100) DEFAULT 'N/A',
+            res_city VARCHAR(100) DEFAULT 'N/A',
+            res_municipality VARCHAR(100) DEFAULT 'N/A',
+            res_province VARCHAR(100) DEFAULT 'N/A',
+            res_zipcode VARCHAR(20) DEFAULT 'N/A',
+            
+            perm_barangay_address VARCHAR(100) DEFAULT 'N/A',
+            perm_city VARCHAR(100) DEFAULT 'N/A',
+            perm_municipality VARCHAR(100) DEFAULT 'N/A',
+            perm_province VARCHAR(100) DEFAULT 'N/A',
+            perm_zipcode VARCHAR(20) DEFAULT 'N/A',
+            
+            Q34A TINYINT DEFAULT 0,
+            Q34B TINYINT DEFAULT 0,
+            Q35a TINYINT DEFAULT 0,
+            Q35b TINYINT DEFAULT 0,
+            Q36 VARCHAR(10) DEFAULT 'No',
+            Q37 TINYINT DEFAULT 0,
+            Q38a TINYINT DEFAULT 0,
+            Q38b TINYINT DEFAULT 0,
+            Q39a TINYINT DEFAULT 0,
+            Q39b TINYINT DEFAULT 0,
+            Q40a TINYINT DEFAULT 0,
+            Q40b TINYINT DEFAULT 0,
+            Q40c TINYINT DEFAULT 0
         )",
         "CREATE TABLE IF NOT EXISTS work_experience (
             id INT AUTO_INCREMENT PRIMARY KEY,
@@ -105,11 +132,12 @@ try {
         )",
         "CREATE TABLE IF NOT EXISTS activity_logs (
             id INT AUTO_INCREMENT PRIMARY KEY,
-            user_id INT,
-            action VARCHAR(50),
-            description TEXT,
-            record_id INT,
-            table_name VARCHAR(50),
+            table_name VARCHAR(50) NOT NULL,
+            action_type ENUM('INSERT', 'UPDATE', 'DELETE') NOT NULL,
+            record_id INT NOT NULL,
+            user_id INT, 
+            username VARCHAR(50),
+            details TEXT,
             timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )"
     ];
@@ -119,16 +147,15 @@ try {
     }
     echo "Tables created successfully.<br>";
 
-    // 5. Create Triggers (Drop if exists to avoid errors on re-run)
     $triggers = [
         "DROP TRIGGER IF EXISTS after_employee_insert",
-        "CREATE TRIGGER after_employee_insert AFTER INSERT ON employees FOR EACH ROW BEGIN INSERT INTO activity_logs (action, description, record_id, table_name) VALUES ('ADD', CONCAT('Added employee: ', NEW.surname, ', ', NEW.firstname), NEW.id, 'employees'); END",
+        "CREATE TRIGGER after_employee_insert AFTER INSERT ON employees FOR EACH ROW BEGIN INSERT INTO activity_logs (table_name, action_type, record_id, user_id, username, details) VALUES ('employees', 'INSERT', NEW.id, @current_user_id, @current_username, CONCAT('Added employee: ', NEW.firstname, ' ', NEW.surname)); END",
         
         "DROP TRIGGER IF EXISTS after_employee_update",
-        "CREATE TRIGGER after_employee_update AFTER UPDATE ON employees FOR EACH ROW BEGIN INSERT INTO activity_logs (action, description, record_id, table_name) VALUES ('MODIFY', CONCAT('Updated employee: ', NEW.surname, ', ', NEW.firstname), NEW.id, 'employees'); END",
+        "CREATE TRIGGER after_employee_update AFTER UPDATE ON employees FOR EACH ROW BEGIN INSERT INTO activity_logs (table_name, action_type, record_id, user_id, username, details) VALUES ('employees', 'UPDATE', NEW.id, @current_user_id, @current_username, CONCAT('Updated employee: ', NEW.firstname, ' ', NEW.surname)); END",
         
         "DROP TRIGGER IF EXISTS after_employee_delete",
-        "CREATE TRIGGER after_employee_delete AFTER DELETE ON employees FOR EACH ROW BEGIN INSERT INTO activity_logs (action, description, record_id, table_name) VALUES ('DELETE', CONCAT('Deleted employee ID: ', OLD.employee_id), OLD.id, 'employees'); END"
+        "CREATE TRIGGER after_employee_delete AFTER DELETE ON employees FOR EACH ROW BEGIN INSERT INTO activity_logs (table_name, action_type, record_id, user_id, username, details) VALUES ('employees', 'DELETE', OLD.id, @current_user_id, @current_username, CONCAT('Deleted employee: ', OLD.firstname, ' ', OLD.surname)); END"
     ];
 
     foreach ($triggers as $trigger) {

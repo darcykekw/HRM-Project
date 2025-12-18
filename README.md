@@ -39,8 +39,11 @@ The system comes with pre-configured accounts for different roles:
     *   **Architecture**: Object-Oriented PHP (Classes for Auth, Database, Employee).
     *   **Database**: Normalized schema with `AUTO_INCREMENT` IDs and proper data types.
 
-## Recent Updates
-*   Fixed database schema inconsistencies (column names and types).
-*   Enabled `AUTO_INCREMENT` for employee IDs.
-*   Expanded field lengths for phone numbers to accommodate international formats.
-*   Resolved "Undefined array key" errors in views.
+## Utility Scripts
+
+*   **`install.php`**:
+    *   **Purpose**: Initializes the database structure.
+    *   **Usage**: Run this script (`http://localhost/hrmis/install.php`) to create the `hrm_project` database, tables, and default users. Useful for deployment or resetting the database.
+*   **`reset_password.php`**:
+    *   **Purpose**: Emergency password reset.
+    *   **Usage**: If you get locked out, run this script (`http://localhost/hrmis/reset_password.php`) to reset the `admin` password to `password123`.

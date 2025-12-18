@@ -10,7 +10,6 @@ class Employee {
 
     public function create($data) {
         try {
-            // Set user context for triggers
             if (session_status() == PHP_SESSION_NONE) {
                 session_start();
             }
@@ -81,7 +80,6 @@ class Employee {
 
     public function update($id, $data) {
         try {
-            // Set user context for triggers
             if (session_status() == PHP_SESSION_NONE) {
                 session_start();
             }
@@ -124,7 +122,6 @@ class Employee {
 
     public function delete($id) {
         try {
-            // Set user context for triggers
             if (session_status() == PHP_SESSION_NONE) {
                 session_start();
             }
